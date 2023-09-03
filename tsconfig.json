@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "commonjs",
+      "outDir": "./dist",
+      "rootDir": "./src",
+      "strict": false,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "experimentalDecorators": true
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"],
+    "baseUrl": "./",
+    "paths": {
+      "@overnightjs/core": ["node_modules/overnight/dist/core"],
+    },
+}
+  
