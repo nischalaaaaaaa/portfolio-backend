@@ -53,7 +53,7 @@ export class AuthController {
                 throw new Error('User already exists');
             }
             const salt = await bcrypt.genSalt(2);
-            const hash = await bcrypt.hash(password, +salt);
+            const hash = await bcrypt.hash(password, salt);
             await User.create({
                 username: name,
                 email: email,
@@ -61,7 +61,7 @@ export class AuthController {
                 lastLogin: new Date(),
                 active: true,
             })
-            return sendResponse(res, true, '', [1,2,3]);
+            return sendResponse(res, true, 'Registered Successfully', null);
         } catch (error) {
             return sendResponse(res, false, error.message, error);
         }
