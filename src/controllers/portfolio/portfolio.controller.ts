@@ -1,5 +1,5 @@
 import { Controller, Middleware, Get, Post, Put, Delete } from '@overnightjs/core';
-import sendResponse from '../../middlewares/middleware';
+import sendResponse from '../../middlewares/send-response';
 import { Types } from 'mongoose';
 
 @Controller('sai-akhil')

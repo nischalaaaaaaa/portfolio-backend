@@ -6,7 +6,7 @@ import { Db } from './config/db';
 import jwt_decode from 'jwt-decode';
 import { Types } from 'mongoose';
 import { User } from './models/user.model';
-import sendResponse from './middlewares/middleware';
+import sendResponse from './middlewares/send-response';
 import variables from './config/variables';
 import * as publicControllers from './controllers/public-controllers'
 
@@ -15,7 +15,7 @@ const { expressjwt: jwt } = require("express-jwt");
 
 class App extends Server {
 
-    jwtEscapeUrls = ['/sai-akhil','/login','/register', /^\/userToken\/.*/, '/refreshToken'];
+    jwtEscapeUrls = ['/sai-akhil', /^\/auth\/.*/, /^\/userToken\/.*/, '/refreshToken'];
 
     constructor() {
         super();
@@ -88,7 +88,7 @@ class App extends Server {
             if (req.headers.authorization){
                 const userData = jwt_decode(req.headers.authorization);
                 if (userData) {
-                    const userId = new Types.ObjectId((userData as any).id);
+                    const userId = new Types.ObjectId((userData as any).user);
                     const userDoc = await User.findById(userId);
                     if (userDoc?.active) {
                         next();
@@ -135,7 +135,8 @@ class App extends Server {
             process.on(eventType, exitRouter.bind(null, { exit: true }));
         })
 
-        function exitHandler(exitCode) {//only sync code should be written here
+        function exitHandler(exitCode) {
+            //only sync code should be written here
         }
         process.on('exit', exitHandler)
     }

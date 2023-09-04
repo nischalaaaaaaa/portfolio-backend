@@ -17,7 +17,7 @@ class Config {
     private readonly dbhost = process.env.dbhost || 'localhost';
     private readonly dbusername = process.env.dbusername || '';
     private readonly dbpassword = process.env.dbpassword || '';
-    private readonly dbname = process.env.dbname || 'progress-db';
+    private readonly dbname = process.env.dbname || 'sai-akhil';
     private readonly dbsource = process.env.dbsource || 'admin';
   
     private readonly REDIS_PORT = process.env.REDIS_PORT || 6379;
