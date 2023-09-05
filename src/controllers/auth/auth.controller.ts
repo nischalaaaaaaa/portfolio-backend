@@ -2,11 +2,12 @@ import { Controller, Middleware, Get, Post, Put, Delete } from '@overnightjs/cor
 import sendResponse from '../../middlewares/send-response';
 import { Types } from 'mongoose';
 const bcrypt = require('bcrypt');
-import variables from '../../config/variables';
+import constants from '../../config/constants';
 import { JWTPayload } from '../../config/types';
 import { User } from '../../models/user.model';
 import { comparePasswords, getUserByNameOrEmail, hashData, makeToken } from './auth.service';
-const { expressjwt: jwt } = require("express-jwt");
+import { CODES } from '../../config/enums';
+const jwt = require('jsonwebtoken');
 
 @Controller('auth')
 export class AuthController {
@@ -71,14 +72,26 @@ export class AuthController {
     async renewAccess(req, res) {
         try {
             const { refreshToken } = req.body;
-            jwt.verify(refreshToken, variables.refreshJwtSecret, (err, decoded) => {
+            jwt.verify(refreshToken, constants.refreshJwtSecret, async (err, decoded) => {
                 if (err) {
-                    return res.status(401).json({ message: 'Invalid refresh token' });
+                    return sendResponse(res, false, err.message, err, false, CODES.REFRESH_TOKEN_EXPIRED);
+                } else {
+                    try {
+                        const userId = new Types.ObjectId(decoded.user);
+                        const user = await User.findById(userId);
+                        const tokens = makeToken(user, false);
+                        const payload: Partial<JWTPayload> = {
+                            userDetails: {
+                                _id: user._id,
+                                name: user.username
+                            },
+                            ...tokens
+                        };
+                        return sendResponse(res, true, 'New access token', payload);
+                    } catch (err) {
+                        return sendResponse(res, false, 'Error getting new tokens', null);
+                    }
                 }
-                const newAccessToken = jwt.sign( decoded, variables.jwtSecret, {
-                    expiresIn: variables.refreshJwtSecret,
-                });
-                return sendResponse(res, true, 'New access token', newAccessToken);
             });
         } catch (error) {
             return sendResponse(res, false, error.message, error);

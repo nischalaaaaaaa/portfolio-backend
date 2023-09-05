@@ -7,15 +7,19 @@ import jwt_decode from 'jwt-decode';
 import { Types } from 'mongoose';
 import { User } from './models/user.model';
 import sendResponse from './middlewares/send-response';
-import variables from './config/variables';
+import constants from './config/constants';
 import * as publicControllers from './controllers/public-controllers'
+import { CODES } from './config/enums';
 
 const morgan = require('morgan')
 const { expressjwt: jwt } = require("express-jwt");
 
 class App extends Server {
 
-    jwtEscapeUrls = ['/sai-akhil', /^\/auth\/.*/, /^\/userToken\/.*/, '/refreshToken'];
+    jwtEscapeUrls = [
+        '/sai-akhil', 
+        /^\/auth\/.*/
+    ];
 
     constructor() {
         super();
@@ -30,7 +34,7 @@ class App extends Server {
 
     initializeServer() {
         this.loadControllers();
-        if (process.env.NODE_APP_INSTANCE == '0' || process.env.NODE_APP_INSTANCE == undefined) {
+        if (process.env.NODE_APP_INSTANCE == undefined) {
             //schedulecrons
         }
         if(process.env.NODE_APP_INSTANCE == '0') {
@@ -47,7 +51,7 @@ class App extends Server {
         express.Router()
         this.app.use((req, res, next) => {
             res.header("Access-Control-Allow-Origin", "*");
-            res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE,OPTIONS");
+            res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, user, authorization");
             next();
         });
@@ -57,7 +61,7 @@ class App extends Server {
         this.app.enable('trust proxy');
         this.app.use(express.json({ limit: '1024mb' }));
         this.app.use(express.urlencoded({ extended: false }));
-        this.app.use(express.static(variables.PUBLIC_ASSETS_PATH));
+        this.app.use(express.static(constants.PUBLIC_ASSETS_PATH));
 
         if (process.env.NODE_ENV && process.env.NODE_ENV !== 'local') {
             this.app.use(morgan('combined', { logger }));
@@ -65,14 +69,14 @@ class App extends Server {
             this.app.use(morgan('dev', { logger }));
         }
         this.app.use(jwt({ 
-            secret: variables.jwtSecret,
+            secret: constants.jwtSecret,
             algorithms: ["HS256"],
         }).unless({
             path: this.jwtEscapeUrls
         }));
         this.app.use((err, req, res, next) => {
             if (err.status === 401) {
-                sendResponse(res, false, '', null, false, 1001);
+                sendResponse(res, false, '', null, false, CODES.TOKEN_EXPIRED);
             } else {
                 res.status(err.status || 500);
                 res.json({
@@ -93,7 +97,7 @@ class App extends Server {
                     if (userDoc?.active) {
                         next();
                     } else {
-                        return sendResponse(res, false, 'User Inactive', null, false, 1002);
+                        return sendResponse(res, false, 'User Inactive', null, false, CODES.REFRESH_TOKEN_EXPIRED);
                     }
                 }
             } else {
@@ -142,8 +146,8 @@ class App extends Server {
     }
 
     public start() {
-        this.app.listen(variables.port, () => {
-            logger.info("Server ready at port: " + variables.port);
+        this.app.listen(constants.port, () => {
+            logger.info("Server ready at port: " + constants.port);
         })
     }
 }

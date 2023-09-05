@@ -1,5 +1,5 @@
 import { JWTPayload } from "../../config/types";
-import variables from "../../config/variables";
+import constants from "../../config/constants";
 import { IUser, User } from "../../models/user.model";
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -13,7 +13,7 @@ export const registerUser = (userName, password) => {
 }
 
 export const hashData = async (data) => {
-    return await bcrypt.hashSync(data, variables.saltRounds);
+    return await bcrypt.hashSync(data, constants.saltRounds);
 }
 
 export const getUserById = async (userId) => {
@@ -37,13 +37,13 @@ export const comparePasswords = (givenPassword: string, user: IUser) => {
 
 export const makeToken = (user, isLoginTime = false) => {
     const result: Partial<JWTPayload> = {};
-    const token = jwt.sign({user: user._id}, variables.jwtSecret, {
-        expiresIn: variables.tokenExpireTime,
+    const token = jwt.sign({user: user._id}, constants.jwtSecret, {
+        expiresIn: constants.tokenExpireTime,
     });
     result['token'] = token;
     if(isLoginTime) {
-        const refreshToken = jwt.sign({user: user._id}, variables.refreshJwtSecret, {
-            expiresIn: variables.refreshTokenExpireTime,
+        const refreshToken = jwt.sign({user: user._id}, constants.refreshJwtSecret, {
+            expiresIn: constants.refreshTokenExpireTime,
         });
         result['refreshToken'] = refreshToken
     }

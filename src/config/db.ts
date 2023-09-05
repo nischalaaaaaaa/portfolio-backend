@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import config from './variables';
+import config from './constants';
 import logger from './logger';
 
 export class Db {

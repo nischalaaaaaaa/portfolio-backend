@@ -5,12 +5,12 @@ class Config {
     private readonly socketPort = process.env.socketPort || 4444;
   
     //security
-    private readonly jwtSecret = process.env.jwtSecret || 'yo-its-a-secret';
-    private readonly tokenExpireTime = process.env.tokenExpireTime || '6h';
+    private readonly jwtSecret = process.env.jwtSecret || 'jwt-secret';
+    private readonly tokenExpireTime = process.env.tokenExpireTime || '5h';
     private readonly saltRounds = process.env.saltRounds || 2;
   
-    private readonly refreshJwtSecret = process.env.refreshJwtSecret || 'yo-its-a-black_box';
-    private readonly refreshTokenExpireTime = process.env.refreshTokenExpireTime || '30d';
+    private readonly refreshJwtSecret = process.env.refreshJwtSecret || 'jwt-refresh-secret';
+    private readonly refreshTokenExpireTime = process.env.refreshTokenExpireTime || '1d';
   
     //db
     private readonly dbprotocol = process.env.dbprotocol || 'mongodb';
