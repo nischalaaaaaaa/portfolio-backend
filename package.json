@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/appp.js",
-    "start:debug": "nodemon --inspect=5858 dist/appp.js"
+    "start": "npm run dev",
+    "dev": "npm run build && nodemon --inspect=5858 dist/server.js",
+    "prod": "npm run build && node dist/server.js"
   },
   "keywords": [
     "backend"
