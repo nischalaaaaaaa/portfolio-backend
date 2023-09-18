@@ -1,12 +1,12 @@
 import { Controller, Middleware, Get, Post, Put, Delete } from '@overnightjs/core';
 import sendResponse from '../../middlewares/send-response';
 import { Types } from 'mongoose';
-const bcrypt = require('bcrypt');
 import constants from '../../config/constants';
 import { JWTPayload } from '../../config/types';
 import { User } from '../../models/user.model';
 import { comparePasswords, getUserByNameOrEmail, hashData, makeToken } from './auth.service';
 import { CODES } from '../../config/enums';
+import { CustomBcrypt } from '../../config/custom-bcrypt';
 const jwt = require('jsonwebtoken');
 
 @Controller('auth')
@@ -53,8 +53,8 @@ export class AuthController {
             if(userExistence) {
                 throw new Error('User already exists');
             }
-            const salt = await bcrypt.genSalt(2);
-            const hash = await bcrypt.hash(password, salt);
+            const bcrypt = new CustomBcrypt();
+            const hash = bcrypt.hash(password);
             await User.create({
                 username: name,
                 email: email,

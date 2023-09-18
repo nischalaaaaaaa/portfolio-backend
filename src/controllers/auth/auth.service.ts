@@ -1,8 +1,8 @@
 import { JWTPayload } from "../../config/types";
 import constants from "../../config/constants";
 import { IUser, User } from "../../models/user.model";
+import { CustomBcrypt } from "../../config/custom-bcrypt";
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 
 export const loginUser = (userName, password) => {
     return true;
@@ -13,7 +13,8 @@ export const registerUser = (userName, password) => {
 }
 
 export const hashData = async (data) => {
-    return await bcrypt.hashSync(data, constants.saltRounds);
+    const bcrypt = new CustomBcrypt();
+    return bcrypt.hash(data);
 }
 
 export const getUserById = async (userId) => {
@@ -30,7 +31,8 @@ export const createUser = async (userData) => {
 }
 
 export const comparePasswords = (givenPassword: string, user: IUser) => {
-    if (!bcrypt.compareSync(givenPassword || '', user.password)) {
+    const bcrypt = new CustomBcrypt();
+    if (!bcrypt.compare(givenPassword || '', user.password)) {
         throw new Error('Authentication failed. Wrong password.');
     }
 }
