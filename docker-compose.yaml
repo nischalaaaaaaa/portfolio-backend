@@ -2,7 +2,7 @@ version: '3.9'
 
 services: 
   mongo_db:
-    container_name: mongo_db_container
+    container_name: localhost
     image: mongo:6.0
     restart: always
     ports:
