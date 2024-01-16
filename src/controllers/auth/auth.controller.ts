@@ -8,12 +8,26 @@ import { comparePasswords, getUserByNameOrEmail, hashData, makeToken } from './a
 import { CODES } from '../../config/enums';
 import { CustomBcrypt } from '../../config/custom-bcrypt';
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const google = require('@googleapis/drive')
+
+const {authenticate} = require('@google-cloud/local-auth');
 
 @Controller('auth')
 export class AuthController {
+
+    async googleDrive() {
+        const auth = await authenticate({
+            keyfilePath: './google-drive.json',
+            scopes: 'https://www.googleapis.com/auth/drive.file',
+        });
+        google.options({auth});
+    }
+
     @Post('login')
     async login(req, res) {
         try {
+            await this.googleDrive();
             const { username, email, password } = req.body;
             if(!username || !password) {
                 throw new Error('Invalid data')
