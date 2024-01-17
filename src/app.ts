@@ -25,11 +25,11 @@ class App extends Server {
         super();
         this.corsPolicy();
         this.middleWare();
-        Db.connect().then(() => {
-            console.log('DB Connected');
-            this.initializeServer();
-            this.startQueues();
-        });
+        // Db.connect().then(() => {
+        //     console.log('DB Connected');
+        // });
+        this.initializeServer();
+        this.startQueues();
     }
 
     initializeServer() {

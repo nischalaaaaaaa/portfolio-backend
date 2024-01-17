@@ -8,7 +8,7 @@
       "esModuleInterop": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
-      "experimentalDecorators": true
+      "experimentalDecorators": true,
     },
     "include": ["**/*.ts"],
     "exclude": ["node_modules"],
