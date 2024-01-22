@@ -5,11 +5,9 @@ const redisResult= 'OK';
 
 class RedisConnection {
     private redisClient: RedisClientType<RedisModules, RedisFunctions, RedisScripts>;
-    constructor () {
-        this.connectToRedis();
-    }
+    constructor () { }
 
-    private async connectToRedis() {
+    public async connectToRedis() {
         try {
             const client = await createClient();
             client.on('error', err => logger.error(err));

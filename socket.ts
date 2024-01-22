@@ -11,8 +11,7 @@ class IoSocket {
     private io;
 
     constructor() {
-        redisConnection
-        setTimeout(()=>this.connectToSocket(), 2000)
+        
     }
 
     connectToSocket() {
