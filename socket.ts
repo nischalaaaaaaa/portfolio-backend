@@ -24,7 +24,7 @@ class IoSocket {
             }
         });
 
-        const pubClient = createClient({ url: "redis://localhost:6379" });
+        const pubClient = createClient();
         const subClient = pubClient.duplicate();
 
         this.io.adapter(createAdapter(pubClient, subClient));
