@@ -16,6 +16,7 @@ services:
     restart: always
     ports:
       - 6379:6379
+      - 4444:4444
     volumes:
       - redis_data:/data
 
