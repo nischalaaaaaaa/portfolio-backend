@@ -17,7 +17,12 @@ class IoSocket {
     connectToSocket() {
         let app = express();
         let httpServer = http.createServer(app);
-        this.io = new Server(httpServer);
+        this.io = new Server(httpServer, {
+            allowEIO3: true,
+            cors: {
+                origin: '*'
+            }
+        });
 
         const pubClient = createClient({ url: "redis://localhost:6379" });
         const subClient = pubClient.duplicate();
@@ -46,6 +51,7 @@ class IoSocket {
             });
 
         });
+
     }
 
     public getSocketInstance() {
