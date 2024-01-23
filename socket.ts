@@ -24,11 +24,15 @@ class IoSocket {
             }
         });
 
-        const pubClient = createClient();
+        const io = new Server();
+        const pubClient = createClient({ host: 'localhost', port: 6379 });
         const subClient = pubClient.duplicate();
 
-        this.io.adapter(createAdapter(pubClient, subClient));
-        this.io.listen(4444);
+        Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+            io.adapter(createAdapter(pubClient, subClient));
+            io.listen(3000);
+        });
+
         this.io.use((socket, next) => {
             const hostAddress = 'http://' + socket.handshake.headers.host.split(":").shift() + ":" + 3000;
             console.log(hostAddress)

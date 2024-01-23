@@ -152,7 +152,7 @@ class App extends Server {
             logger.info("Server ready at port: " + constants.port);
         })
         await redisConnection.connectToRedis()
-        await socket.connectToSocket();
+        socket.connectToSocket();
     }
 }
 
