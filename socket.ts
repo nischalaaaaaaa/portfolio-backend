@@ -4,7 +4,6 @@ import { Server } from 'socket.io';
 const { createClient } = require("redis");
 const { createAdapter } = require("@socket.io/redis-adapter");
 import logger from './src/config/logger';
-import redisConnection from './redis';
 
 class IoSocket {
 
@@ -15,22 +14,22 @@ class IoSocket {
     }
 
     connectToSocket() {
-        let app = express();
-        let httpServer = http.createServer(app);
-        this.io = new Server(httpServer, {
-            allowEIO3: true,
-            cors: {
-                origin: '*'
-            }
-        });
+        // let app = express();
+        // let httpServer = http.createServer(app);
+        // this.io = new Server(httpServer, {
+        //     allowEIO3: true,
+        //     cors: {
+        //         origin: '*'
+        //     }
+        // });
 
-        const io = new Server();
+        this.io = new Server();
         const pubClient = createClient({ host: 'localhost', port: 6379 });
         const subClient = pubClient.duplicate();
 
         Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
-            io.adapter(createAdapter(pubClient, subClient));
-            io.listen(3000);
+            this.io.adapter(createAdapter(pubClient, subClient));
+            this.io.listen(3000);
         });
 
         this.io.use((socket, next) => {
