@@ -14,24 +14,20 @@ class IoSocket {
     }
 
     connectToSocket() {
-        // let app = express();
-        // let httpServer = http.createServer(app);
-        // this.io = new Server(httpServer, {
-        //     allowEIO3: true,
-        //     cors: {
-        //         origin: '*'
-        //     }
-        // });
-
-        this.io = new Server();
-        const pubClient = createClient({ host: 'localhost', port: 6379 });
-        const subClient = pubClient.duplicate();
-
-        Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
-            this.io.adapter(createAdapter(pubClient, subClient));
-            this.io.listen(3000);
+        let app = express();
+        let httpServer = http.createServer(app);
+        this.io = new Server(httpServer, {
+            allowEIO3: true,
+            cors: {
+                origin: '*'
+            }
         });
 
+        const pubClient = createClient();
+        const subClient = pubClient.duplicate();
+
+        this.io.adapter(createAdapter(pubClient, subClient));
+        this.io.listen(4444);
         this.io.use((socket, next) => {
             const hostAddress = 'http://' + socket.handshake.headers.host.split(":").shift() + ":" + 3000;
             console.log(hostAddress)

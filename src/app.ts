@@ -19,8 +19,8 @@ const { expressjwt: jwt } = require("express-jwt");
 class App extends Server {
 
     jwtEscapeUrls = [
-        '/sai-akhil', 
-        /^\/auth\/.*/
+        '/api/sai-akhil', 
+        /^\/api\/auth\/.*/
     ];
 
     constructor() {

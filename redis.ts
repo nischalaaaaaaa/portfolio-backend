@@ -9,7 +9,7 @@ class RedisConnection {
 
     public async connectToRedis() {
         try {
-            const client = await createClient({url: 'redis://redis:6379'});
+            const client = await createClient({url: 'redis://localhost:6379'});
             client.on('error', err => logger.error(err));
             client.on('connect', () => {
                 logger.info('Redis connected')
