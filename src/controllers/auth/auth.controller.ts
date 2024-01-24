@@ -9,7 +9,7 @@ import { CODES } from '../../config/enums';
 import { CustomBcrypt } from '../../config/custom-bcrypt';
 const jwt = require('jsonwebtoken');
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
     @Post('login')
     async login(req, res) {
