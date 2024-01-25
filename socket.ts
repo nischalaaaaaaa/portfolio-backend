@@ -30,7 +30,6 @@ class IoSocket {
         this.io.listen(4444);
         this.io.use((socket, next) => {
             const hostAddress = 'http://' + socket.handshake.headers.host.split(":").shift() + ":" + 3000;
-            console.log(hostAddress)
             next();
         });
 

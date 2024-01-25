@@ -9,7 +9,6 @@ export class GraphController {
     @Post('save')
     async login(req, res) {
         try {
-            console.log(123)
             return sendResponse(res, true, '', {});
         } catch (error) {
             return sendResponse(res, false, error.message, error);
