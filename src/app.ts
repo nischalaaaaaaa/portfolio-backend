@@ -10,7 +10,6 @@ import sendResponse from './middlewares/send-response';
 import constants from './config/constants';
 import * as publicControllers from './controllers/public-controllers'
 import { CODES } from './config/enums';
-import socket from '../socket';
 import redisConnection from '../redis';
 
 const morgan = require('morgan')
@@ -152,7 +151,6 @@ class App extends Server {
             logger.info("Server ready at port: " + constants.port);
         })
         await redisConnection.connectToRedis()
-        socket.connectToSocket();
     }
 }
 

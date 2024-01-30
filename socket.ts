@@ -10,7 +10,7 @@ class IoSocket {
     private io;
 
     constructor() {
-        
+        this.connectToSocket();
     }
 
     connectToSocket() {
@@ -36,10 +36,9 @@ class IoSocket {
         this.io.on('connection', (socket) => {
             logger.info(this.io.engine.clientsCount + ' sockets connected');
             if (socket?.userId) {
-                socket.join(socket?.userId);//each user has a room and all logins will be in the same room with userId
+                socket.join(socket?.userId);
                 logger.info(`Socket==>___${socket?.userId} has joined___`);
             }
-            // config.io.emit('tx', 'msg');
             socket.on('disconnect', () => {
                 if (socket?.userId) {
                     socket.leave(socket?.userId);
@@ -47,9 +46,7 @@ class IoSocket {
                 }
                 logger.info(this.io.engine.clientsCount + " sockets connected'");
             });
-
         });
-
     }
 
     public getSocketInstance() {

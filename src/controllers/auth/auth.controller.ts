@@ -8,9 +8,24 @@ import { comparePasswords, getUserByNameOrEmail, hashData, makeToken } from './a
 import { CODES } from '../../config/enums';
 import { CustomBcrypt } from '../../config/custom-bcrypt';
 const jwt = require('jsonwebtoken');
+const Redis = require('ioredis');
+const redis = new Redis();
 
 @Controller('api/auth')
 export class AuthController {
+
+    @Get('test')
+    async test(req,res) {
+        try {
+            const channel = 'test'
+            redis.publish(channel, JSON.stringify({ event: 'refreshData', data: 'eventData' }));
+            const msg = `Event 'refreshData' published to ${channel}: eventData`
+            return sendResponse(res, true, '', msg);
+        } catch (error) {
+            return sendResponse(res, false, error.message, error);
+        }
+    }
+
     @Post('login')
     async login(req, res) {
         try {
