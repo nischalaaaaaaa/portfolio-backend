@@ -28,13 +28,15 @@ export class SocketConnection extends RedisConnection {
         })
         httpServer.listen(4444);
         websocket.on("request", request=> {
-            const con = request.accept(null, request.origin)
-            con.on('error', (error) => console.error(error))
-            con.on("close", (code, description)=>console.warn(`ERR: ${code}, ${description}`))
-            con.on("message", (message: any) => {
-                console.log(`Client sent this message: ${message.utf8Data}`)
-            })
-            this.connections.push(con)
+            request.accept(null, request.origin);
+            for(const connection of websocket.connections) {
+                connection.on('error', (error) => console.error(error))
+                connection.on("close", (code, description)=>console.warn(`ERR: ${code}, ${description}`))
+                connection.on("message", (message: any) => {
+                    console.log(`Client sent this message: ${message.utf8Data}`)
+                })
+            }
+            this.connections = [...websocket.connections]
         })
     }
 
