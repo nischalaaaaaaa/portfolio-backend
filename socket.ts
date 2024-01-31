@@ -66,9 +66,9 @@ export class SocketConnection extends RedisConnection {
         this.createServer();
     }
 
-    public publishToChannel(channelType: CHANNEL_TYPE, data: any) {
+    public async publishToChannel(channelType: CHANNEL_TYPE, data: any) {
         try {
-            this.redisClient.publish(channelType, data)
+            await this.redisClient.publish(channelType, data)
         } catch (err) {
             console.error('Unable to publish: ', err)
         }

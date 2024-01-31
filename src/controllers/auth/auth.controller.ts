@@ -14,9 +14,9 @@ const jwt = require('jsonwebtoken');
 export class AuthController {
 
     @Get('test')
-    async test(req,res) {
+    async test(req, res) {
         try {
-            socketConnection.publishToChannel(CHANNEL_TYPE.PERMISSION_REFRESH, 'data');
+            await socketConnection.publishToChannel(CHANNEL_TYPE.PERMISSION_REFRESH, 'data');
             return sendResponse(res, true, '', null);
         } catch (error) {
             return sendResponse(res, false, error.message, error);
