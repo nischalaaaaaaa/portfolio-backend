@@ -4,10 +4,10 @@ import { Types } from 'mongoose';
 import constants from '../../config/constants';
 import { JWTPayload } from '../../config/types';
 import { User } from '../../models/user.model';
-import { comparePasswords, getUserByNameOrEmail, hashData, makeToken } from './auth.service';
+import { comparePasswords, getUserByNameOrEmail, makeToken } from './auth.service';
 import { CHANNEL_TYPE, CODES } from '../../config/enums';
 import { CustomBcrypt } from '../../config/custom-bcrypt';
-import redisSocketBridge from '../../../socket';
+import socketConnection from '../../../socket';
 const jwt = require('jsonwebtoken');
 
 @Controller('api/auth')
@@ -16,7 +16,7 @@ export class AuthController {
     @Get('test')
     async test(req,res) {
         try {
-            redisSocketBridge.publishToChannel(CHANNEL_TYPE.PERMISSION_REFRESH, 'data');
+            socketConnection.publishToChannel(CHANNEL_TYPE.PERMISSION_REFRESH, 'data');
             return sendResponse(res, true, '', null);
         } catch (error) {
             return sendResponse(res, false, error.message, error);

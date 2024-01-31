@@ -75,6 +75,6 @@ export class SocketConnection extends RedisConnection {
     }
 }
 
-const redisSocketBridge = new SocketConnection();
+const socketConnection = new SocketConnection();
 
-export default redisSocketBridge;
+export default socketConnection;
