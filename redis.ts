@@ -1,15 +1,16 @@
 import { createClient, RedisClientType, RedisFunctions, RedisScripts, RedisModules } from 'redis';
 import logger from './src/config/logger';
+import { CHANNEL_TYPE } from './src/config/enums';
 
 const redisResult= 'OK';
 
-class RedisConnection {
-    private redisClient: RedisClientType<RedisModules, RedisFunctions, RedisScripts>;
+export class RedisConnection {
+    protected redisClient: RedisClientType<RedisModules, RedisFunctions, RedisScripts>;
     constructor () { }
 
-    public async connectToRedis() {
+    protected async connectToRedis() {
         try {
-            const client = await createClient({url: 'redis://localhost:6379'});
+            const client = createClient({url: 'redis://localhost:6379'});
             client.on('error', err => logger.error(err));
             client.on('connect', () => {
                 logger.info('Redis connected')
@@ -116,8 +117,6 @@ class RedisConnection {
             throw Error('something went wrong while getting value :'+ error);
         }
     }
-
-
 }
 
 const redisConnection = new RedisConnection();

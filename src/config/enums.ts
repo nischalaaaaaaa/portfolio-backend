@@ -10,3 +10,8 @@ export enum RESPONSE_TYPE {
     Warning,
     Success,
 }
+
+export enum CHANNEL_TYPE {
+    PERMISSION_REFRESH = 'PERMISSION_REFRESH',
+    NOTIFICATION_REFRESH = 'NOTIFICATION_REFRESH',
+}

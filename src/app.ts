@@ -10,7 +10,7 @@ import sendResponse from './middlewares/send-response';
 import constants from './config/constants';
 import * as publicControllers from './controllers/public-controllers'
 import { CODES } from './config/enums';
-import redisConnection from '../redis';
+import socket from '../socket';
 
 const morgan = require('morgan')
 const { expressjwt: jwt } = require("express-jwt");
@@ -150,7 +150,7 @@ class App extends Server {
         this.app.listen(constants.port, () => {
             logger.info("Server ready at port: " + constants.port);
         })
-        await redisConnection.connectToRedis()
+        socket.connectToSocket();
     }
 }
 

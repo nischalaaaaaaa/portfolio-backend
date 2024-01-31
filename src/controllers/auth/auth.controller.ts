@@ -5,11 +5,10 @@ import constants from '../../config/constants';
 import { JWTPayload } from '../../config/types';
 import { User } from '../../models/user.model';
 import { comparePasswords, getUserByNameOrEmail, hashData, makeToken } from './auth.service';
-import { CODES } from '../../config/enums';
+import { CHANNEL_TYPE, CODES } from '../../config/enums';
 import { CustomBcrypt } from '../../config/custom-bcrypt';
+import redisSocketBridge from '../../../socket';
 const jwt = require('jsonwebtoken');
-const Redis = require('ioredis');
-const redis = new Redis();
 
 @Controller('api/auth')
 export class AuthController {
@@ -17,10 +16,8 @@ export class AuthController {
     @Get('test')
     async test(req,res) {
         try {
-            const channel = 'test'
-            redis.publish(channel, JSON.stringify({ event: 'refreshData', data: 'eventData' }));
-            const msg = `Event 'refreshData' published to ${channel}: eventData`
-            return sendResponse(res, true, '', msg);
+            redisSocketBridge.publishToChannel(CHANNEL_TYPE.PERMISSION_REFRESH, 'data');
+            return sendResponse(res, true, '', null);
         } catch (error) {
             return sendResponse(res, false, error.message, error);
         }
