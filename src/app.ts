@@ -11,6 +11,8 @@ import constants from './config/constants';
 import * as publicControllers from './controllers/public-controllers'
 import { CODES } from './config/enums';
 import socket from '../socket';
+import 'dotenv/config'; 
+import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
 
 const morgan = require('morgan')
 const { expressjwt: jwt } = require("express-jwt");
@@ -19,7 +21,8 @@ class App extends Server {
 
     jwtEscapeUrls = [
         '/api/sai-akhil', 
-        /^\/api\/auth\/.*/
+        /^\/api\/auth\/.*/,
+        /^\/api\/clerk\/.*/,
     ];
 
     constructor() {
@@ -69,6 +72,7 @@ class App extends Server {
         } else {
             this.app.use(morgan('dev', { logger }));
         }
+        this.app.use(ClerkExpressWithAuth())
         this.app.use(jwt({ 
             secret: constants.jwtSecret,
             algorithms: ["HS256"],
@@ -91,15 +95,17 @@ class App extends Server {
         });
         this.app.use(async (req, res, next) => {
             if (req.headers.authorization){
-                const userData = jwt_decode(req.headers.authorization);
-                if (userData) {
-                    const userId = new Types.ObjectId((userData as any).user);
+                const userData: any = jwt_decode(req.headers.authorization);
+                if (userData && !userData.org_id) {
+                    const userId = new Types.ObjectId(userData.user);
                     const userDoc = await User.findById(userId);
                     if (userDoc?.active) {
                         next();
                     } else {
                         return sendResponse(res, false, 'User Inactive', null, false, CODES.REFRESH_TOKEN_EXPIRED);
                     }
+                } else {
+                    next()
                 }
             } else {
                 next();
