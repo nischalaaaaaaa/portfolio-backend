@@ -1,17 +1,8 @@
 import { ClerkUser } from "../../models/miracle/clerk-user.model"
 
 export class ClerkUserService {
-    private clerkUserId: string = null;
-
-    constructor (clerkUserId?: string) {
-        this.clerkUserId = clerkUserId
-    }
-
-    protected setUserId (clerkUserId: string) {
-        this.clerkUserId = clerkUserId
-    }
-
     async create (
+        id: string,
         name: {
             firstName: string,
             lastName: string
@@ -19,10 +10,10 @@ export class ClerkUserService {
         gender?: string,
         imageUrl?: string
     ) {
-        const user = await this.getUser();
+        const user = await this.getUser(id);
         if(!user) {
             await ClerkUser.create({
-                clerkUserId: this.clerkUserId,
+                clerkUserId: id,
                 firstName: name.firstName,
                 lastName: name.lastName,
                 ...(gender? { gender } : {}),
@@ -33,18 +24,19 @@ export class ClerkUserService {
 
     async update (
         payload: {
+            id: string,
             firstName?: string,
             lastName?: string,
             gender?: string,
             imageUrl?: string
         }
     ) {
-        const user = await this.getUser();
+        const user = await this.getUser(payload.id);
         if(!user) {
             throw new Error(`User does not exist anymore`)
         }
         await ClerkUser.updateOne({
-            clerkUserId: this.clerkUserId
+            clerkUserId: payload.id
         }, {
             update: {
                 $set: {
@@ -54,13 +46,13 @@ export class ClerkUserService {
         })
     }
 
-    async delete () {
+    async delete (id: string) {
         await ClerkUser.deleteOne({
-            clerkUserId: this.clerkUserId
+            clerkUserId: id
         })
     }
 
-    async getUser () {
-        return await ClerkUser.findOne({clerkUserId: this.clerkUserId})
+    async getUser (id) {
+        return await ClerkUser.findOne({clerkUserId: id})
     }
 }
