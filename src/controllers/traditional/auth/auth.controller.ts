@@ -1,13 +1,13 @@
 import { Controller, Middleware, Get, Post, Put, Delete } from '@overnightjs/core';
-import sendResponse from '../../middlewares/send-response';
 import { Types } from 'mongoose';
-import constants from '../../config/constants';
-import { JWTPayload } from '../../config/types';
-import { User } from '../../models/user.model';
+import constants from '../../../config/constants';
+import { JWTPayload } from '../../../config/types';
+import { User } from '../../../models/traditional/user.model';
 import { comparePasswords, getUserByNameOrEmail, makeToken } from './auth.service';
-import { CHANNEL_TYPE, CODES } from '../../config/enums';
-import { CustomBcrypt } from '../../config/custom-bcrypt';
-import socketConnection from '../../../socket';
+import { CHANNEL_TYPE, CODES } from '../../../config/enums';
+import { CustomBcrypt } from '../../../config/custom-bcrypt';
+import socketConnection from '../../../../socket';
+import sendResponse from '../../../middlewares/send-response';
 const jwt = require('jsonwebtoken');
 
 @Controller('api/auth')

@@ -1,7 +1,7 @@
-import { JWTPayload } from "../../config/types";
-import constants from "../../config/constants";
-import { IUser, User } from "../../models/user.model";
-import { CustomBcrypt } from "../../config/custom-bcrypt";
+import { JWTPayload } from "../../../config/types";
+import constants from "../../../config/constants";
+import { IUser, User } from "../../../models/traditional/user.model";
+import { CustomBcrypt } from "../../../config/custom-bcrypt";
 const jwt = require('jsonwebtoken');
 
 export const loginUser = (userName, password) => {
