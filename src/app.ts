@@ -1,4 +1,3 @@
-
 import * as express from 'express';
 import { Server } from '@overnightjs/core';
 import logger from './config/logger';
@@ -8,7 +7,7 @@ import { Types } from 'mongoose';
 import { User } from './models/traditional/user.model';
 import sendResponse from './middlewares/send-response';
 import constants from './config/constants';
-import * as publicControllers from './controllers/public-controllers'
+import * as publicControllers from './controllers'
 import { CODES } from './config/enums';
 import socket from '../socket';
 import 'dotenv/config'; 
@@ -132,7 +131,7 @@ class App extends Server {
                  * req from clerk webhook
                  */
                 const svixHeaders: any =req.headers;
-                const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+                const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET_USER);
                 const evt: any = wh.verify(req.body.toString(), svixHeaders);
                 if(!evt) {
                     return sendResponse(res, false, 'Unauthorized request', null, false, CODES.CLERK_UNAUTHORIZED);
