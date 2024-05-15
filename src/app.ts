@@ -5,7 +5,7 @@ import logger from './config/logger';
 import { Db } from './config/db';
 import jwt_decode from 'jwt-decode';
 import { Types } from 'mongoose';
-import { User } from './models/user.model';
+import { User } from './models/traditional/user.model';
 import sendResponse from './middlewares/send-response';
 import constants from './config/constants';
 import * as publicControllers from './controllers/public-controllers'
@@ -13,6 +13,8 @@ import { CODES } from './config/enums';
 import socket from '../socket';
 import 'dotenv/config'; 
 import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
+import { Webhook } from 'svix';
+import bodyParser from 'body-parser';
 
 const morgan = require('morgan')
 const { expressjwt: jwt } = require("express-jwt");
@@ -20,9 +22,10 @@ const { expressjwt: jwt } = require("express-jwt");
 class App extends Server {
 
     jwtEscapeUrls = [
-        '/api/sai-akhil', 
+        /^\/api\/sai-akhil\/.*/,
         /^\/api\/auth\/.*/,
         /^\/api\/clerk\/.*/,
+        /^\/webhook\/clerk\/.*/,
     ];
 
     constructor() {
@@ -47,9 +50,7 @@ class App extends Server {
         this.listenToNodeCrashEvents();
     }
 
-    startQueues() {
-
-    }
+    startQueues() { }
 
     private corsPolicy() {
         express.Router()
@@ -63,7 +64,13 @@ class App extends Server {
 
     private middleWare() {
         this.app.enable('trust proxy');
-        this.app.use(express.json({ limit: '1024mb' }));
+        this.app.use((req, res, next) => {
+            if (req.originalUrl.includes('webhook/clerk')) {
+                bodyParser.raw({type: 'application/json'})(req, res, next)
+            } else {
+                express.json({ limit: '1024mb' })(req, res, next);
+            }
+        });
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(express.static(constants.PUBLIC_ASSETS_PATH));
 
@@ -72,6 +79,10 @@ class App extends Server {
         } else {
             this.app.use(morgan('dev', { logger }));
         }
+
+        /**
+         * Clerk paths are different
+         */
         this.app.use(ClerkExpressWithAuth())
         this.app.use(jwt({ 
             secret: constants.jwtSecret,
@@ -79,6 +90,7 @@ class App extends Server {
         }).unless({
             path: this.jwtEscapeUrls
         }));
+
         this.app.use((err, req, res, next) => {
             if (err.status === 401) {
                 sendResponse(res, false, '', null, false, CODES.TOKEN_EXPIRED);
@@ -91,12 +103,22 @@ class App extends Server {
                     },
                 });
             }
-
         });
+        
         this.app.use(async (req, res, next) => {
             if (req.headers.authorization){
                 const userData: any = jwt_decode(req.headers.authorization);
-                if (userData && !userData.org_id) {
+                if(userData?.org_id) {
+                    /**
+                     * req from miracle
+                     * passed clerkMiddleware
+                     */
+                    next();
+                } else {
+                    /**
+                     * Traditional way
+                     * Migration required
+                     */ 
                     const userId = new Types.ObjectId(userData.user);
                     const userDoc = await User.findById(userId);
                     if (userDoc?.active) {
@@ -104,9 +126,21 @@ class App extends Server {
                     } else {
                         return sendResponse(res, false, 'User Inactive', null, false, CODES.REFRESH_TOKEN_EXPIRED);
                     }
-                } else {
-                    next()
                 }
+            } else if (req.headers['svix-id']) {
+                /**
+                 * req from clerk webhook
+                 */
+                const svixHeaders: any =req.headers;
+                const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+                const evt: any = wh.verify(req.body.toString(), svixHeaders);
+                if(!evt) {
+                    return sendResponse(res, false, 'Unauthorized request', null, false, CODES.CLERK_UNAUTHORIZED);
+                }
+                const { _id, ...attributes } = evt.data;
+                req['clerkEventType'] = evt.type;
+                req['clerkAttributes'] = attributes;
+                next()
             } else {
                 next();
             }
