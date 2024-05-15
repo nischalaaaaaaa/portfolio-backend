@@ -1,7 +1,6 @@
-import { Controller, Get, Post } from '@overnightjs/core';
+import { Controller, Post } from '@overnightjs/core';
 import sendResponse from '../../middlewares/send-response';
 import { CLERK_WEBHOOK_EVENTS } from '../../config/enums';
-import { ClerkUser } from '../../models/miracle/clerk-user.model';
 import { ClerkUserService } from './clerk.user.webhook.service';
 
 @Controller('webhook/clerk')

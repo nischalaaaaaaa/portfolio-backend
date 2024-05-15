@@ -131,7 +131,7 @@ class App extends Server {
                  * req from clerk webhook
                  */
                 const svixHeaders: any =req.headers;
-                const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+                const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET_USER);
                 const evt: any = wh.verify(req.body.toString(), svixHeaders);
                 if(!evt) {
                     return sendResponse(res, false, 'Unauthorized request', null, false, CODES.CLERK_UNAUTHORIZED);
