@@ -46,11 +46,13 @@ export class ClerkUserService {
                     ...payload
                 }
             }
+        }, {
+            upsert: true
         })
     }
 
-    async delete(emailAddresses: string) {
-        await ClerkUser.deleteOne({ emailAddresses: { $in: emailAddresses } })
+    async delete(id) {
+        await ClerkUser.deleteOne({ clerkUserId: id })
     }
 
     async getUser(emailAddresses) {

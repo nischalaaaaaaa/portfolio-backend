@@ -21,7 +21,7 @@ export class ClerkController extends ClerkUserService{
                 throw new Error(`Invalid request`)
             }
 
-            const emailAddresses = email_addresses.map(_ => _.email_address);
+            const emailAddresses = (email_addresses ?? []).map(_ => _.email_address);
 
             switch(clerkEventType) {
                 case CLERK_WEBHOOK_EVENTS.USER_CREATED:
