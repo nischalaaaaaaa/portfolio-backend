@@ -7,15 +7,17 @@ export class ClerkUserService {
             firstName: string,
             lastName: string
         },
+        emailAddresses: string[],
         gender?: string,
         imageUrl?: string
     ) {
-        const user = await this.getUser(id);
+        const user = await this.getUser(emailAddresses);
         if(!user) {
             await ClerkUser.create({
                 clerkUserId: id,
                 firstName: name.firstName,
                 lastName: name.lastName,
+                emailAddresses,
                 ...(gender? { gender } : {}),
                 ...(imageUrl? { imageUrl } : {}),
             })
@@ -27,16 +29,17 @@ export class ClerkUserService {
             id: string,
             firstName?: string,
             lastName?: string,
+            emailAddresses: string[],
             gender?: string,
             imageUrl?: string
         }
     ) {
-        const user = await this.getUser(payload.id);
+        const user = await this.getUser(payload.emailAddresses);
         if(!user) {
             throw new Error(`User does not exist anymore`)
         }
         await ClerkUser.updateOne({
-            clerkUserId: payload.id
+            emailAddresses: { $in: payload.emailAddresses }
         }, {
             update: {
                 $set: {
@@ -46,13 +49,11 @@ export class ClerkUserService {
         })
     }
 
-    async delete (id: string) {
-        await ClerkUser.deleteOne({
-            clerkUserId: id
-        })
+    async delete(emailAddresses: string) {
+        await ClerkUser.deleteOne({ emailAddresses: { $in: emailAddresses } })
     }
 
-    async getUser (id) {
-        return await ClerkUser.findOne({clerkUserId: id})
+    async getUser(emailAddresses) {
+        return await ClerkUser.findOne({emailAddresses: { $in: emailAddresses }})
     }
 }

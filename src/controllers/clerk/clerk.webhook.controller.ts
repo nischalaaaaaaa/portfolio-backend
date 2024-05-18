@@ -16,16 +16,19 @@ export class ClerkController extends ClerkUserService{
     async userHandler(req, res) {
         try {
             const { clerkEventType, clerkAttributes }: { clerkEventType: CLERK_WEBHOOK_EVENTS, clerkAttributes: any } = req;
-            const { first_name, last_name, image_url, id, gender } = clerkAttributes;
+            const { first_name, last_name, image_url, id, gender, email_addresses } = clerkAttributes;
             if(!id) {
                 throw new Error(`Invalid request`)
             }
+
+            const emailAddresses = email_addresses.map(_ => _.email_address);
 
             switch(clerkEventType) {
                 case CLERK_WEBHOOK_EVENTS.USER_CREATED:
                     await this.clerkUserService.create( 
                         id,
                         { firstName: first_name, lastName: last_name },
+                        emailAddresses,
                         gender,
                         image_url
                     )
@@ -33,8 +36,9 @@ export class ClerkController extends ClerkUserService{
                     await this.clerkUserService.update({
                         id,
                         firstName: first_name,
-                        lastName:last_name,
+                        lastName: last_name,
                         gender,
+                        emailAddresses,
                         imageUrl: image_url
                     })
                     break;
