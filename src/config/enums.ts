@@ -20,5 +20,8 @@ export enum CHANNEL_TYPE {
 export enum CLERK_WEBHOOK_EVENTS {
     USER_CREATED = 'user.created',
     USER_UPDATED = 'user.updated',
-    USER_DELETED = 'user.deleted'
+    USER_DELETED = 'user.deleted',
+    ORGANIZATION_CREATED = 'organization.created',
+    ORGANIZATION_UPDATED = 'organization.updated',
+    ORGANIZATION_DELETED = 'organization.deleted',
 }

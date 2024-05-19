@@ -12,7 +12,6 @@ import { CODES } from './config/enums';
 import socket from '../socket';
 import 'dotenv/config'; 
 import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
-import { Webhook } from 'svix';
 import bodyParser from 'body-parser';
 
 const morgan = require('morgan')
@@ -107,7 +106,8 @@ class App extends Server {
         this.app.use(async (req, res, next) => {
             if (req.headers.authorization){
                 const userData: any = jwt_decode(req.headers.authorization);
-                if(userData?.org_id) {
+                if(userData?.iss) {
+                    req['userId'] = userData.sub;
                     /**
                      * req from miracle
                      * passed clerkMiddleware
@@ -130,15 +130,6 @@ class App extends Server {
                 /**
                  * req from clerk webhook
                  */
-                const svixHeaders: any =req.headers;
-                const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET_USER);
-                const evt: any = wh.verify(req.body.toString(), svixHeaders);
-                if(!evt) {
-                    return sendResponse(res, false, 'Unauthorized request', null, false, CODES.CLERK_UNAUTHORIZED);
-                }
-                const { _id, ...attributes } = evt.data;
-                req['clerkEventType'] = evt.type;
-                req['clerkAttributes'] = attributes;
                 next()
             } else {
                 next();

@@ -10,7 +10,7 @@ export interface IClerkUser extends Document {
     active : boolean,
 };
 
-const clerkUsersSchema = new Schema({
+const clerkUserSchema = new Schema({
     clerkUserId: { type: Schema.Types.String, unique: true, required:true },
     firstName: { type: Schema.Types.String, trim: true, required: true },
     lastName: { type: Schema.Types.String, trim: true },
@@ -22,4 +22,4 @@ const clerkUsersSchema = new Schema({
     timestamps: true
 });
 
-export const ClerkUser: Model<IClerkUser> = model<IClerkUser>('ClerkUser', clerkUsersSchema);
+export const ClerkUser: Model<IClerkUser> = model<IClerkUser>('ClerkUser', clerkUserSchema);
