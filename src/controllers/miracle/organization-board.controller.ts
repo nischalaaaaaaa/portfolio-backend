@@ -12,8 +12,8 @@ export class MiracleOrganizationBoardController {
         try {
             const { organizationId } = req.query;
             const boards = await MiracleBoard.find({
-                organizationId,
-            }).sort('_id');
+                organizationIdClerk: organizationId,
+            }).sort('updatedAt').lean();
             return sendResponse(res, true, 'Success', boards);
         } catch (error) {
             return sendResponse(res, false, error.message, error);
@@ -23,7 +23,7 @@ export class MiracleOrganizationBoardController {
     @Post('create-board')
     async userHandler(req, res) {
         try {
-            const { organizationId } = req.query;
+            const { organizationId, imageUrl } = req.query;
             const { userId } = req;
             const { firstName, lastName } = await ClerkUser.findOne({
                 clerkUserId: userId
@@ -50,7 +50,8 @@ export class MiracleOrganizationBoardController {
                 authorIdClerk: userId,
                 organizationId: clerkOrganization._id,
                 authorId: clerkUser._id,
-                authorName: `${firstName} ${lastName}`
+                authorName: `${firstName} ${lastName}`,
+                imageUrl,
             })
             return sendResponse(res, true, 'Success', true);
         } catch (error) {

@@ -23,3 +23,9 @@ const clerkOrganizationSchema = new Schema({
 });
 
 export const ClerkOrganization: Model<IClerkOrganization> = model<IClerkOrganization>('ClerkOrganization', clerkOrganizationSchema);
+
+clerkOrganizationSchema.index({
+    organizationIdClerk: 1
+}).index({
+    slug: 1
+})
