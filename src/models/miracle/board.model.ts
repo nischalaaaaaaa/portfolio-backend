@@ -1,4 +1,4 @@
-import { Document, Schema, Model, model } from 'mongoose';
+import { Document, Schema, Model, model, Types } from 'mongoose';
 import { ClerkUser } from './clerk-user.model';
 import { ClerkOrganization } from './clerk-organization.model';
 
@@ -6,13 +6,14 @@ export interface IMiracleBoard extends Document {
     title: string;
     organizationIdClerk: string;
     authorIdClerk: string;
-    organizationId: string;
-    authorId: string;
+    organizationId: Types.ObjectId;
+    authorId: Types.ObjectId;
     authorName: string;
     imageUrl?: string;
+    favourite: boolean;
 };
 
-const miracleBoardSchema = new Schema({
+const miracleBoardSchema: Schema<IMiracleBoard> = new Schema<IMiracleBoard>({
     title: { type: Schema.Types.String, trim: true, required:true },
     authorIdClerk: { type: Schema.Types.String, required:true },
     organizationIdClerk: { type: Schema.Types.String, required:true },
@@ -20,6 +21,9 @@ const miracleBoardSchema = new Schema({
     organizationId: { type: Schema.Types.ObjectId, required:true, ref: ClerkOrganization },
     authorName: { type: Schema.Types.String, trim: true, required: true },
     imageUrl: { type: Schema.Types.String },
+    favourite: { type: Schema.Types.Boolean, default: false }
+}, {
+    timestamps: true
 });
 
 export const MiracleBoard: Model<IMiracleBoard> = model<IMiracleBoard>('MiracleBoard', miracleBoardSchema);
