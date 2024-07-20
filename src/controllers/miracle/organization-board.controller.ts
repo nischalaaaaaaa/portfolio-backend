@@ -71,7 +71,7 @@ export class MiracleOrganizationBoardController {
     @Post('create-board')
     async userHandler(req, res) {
         try {
-            const { organizationId, imageUrl } = req.query;
+            const { organizationId, imageUrl, favouritesOnly: makeItFavourite } = req.query;
             const { userId } = req;
             const { firstName, lastName } = await ClerkUser.findOne({
                 clerkUserId: userId
@@ -92,7 +92,7 @@ export class MiracleOrganizationBoardController {
             const clerkUser = await ClerkUser.findOne({ clerkUserId: userId }).lean();
             const clerkOrganization = await ClerkOrganization.findOne({ organizationIdClerk: organizationId })
 
-            await MiracleBoard.create({
+            const { _id } = await MiracleBoard.create({
                 title: `untitled${series+1}`,
                 organizationIdClerk: organizationId,
                 authorIdClerk: userId,
@@ -100,7 +100,8 @@ export class MiracleOrganizationBoardController {
                 authorId: clerkUser._id,
                 authorName: `${firstName} ${lastName}`,
                 imageUrl,
-            })
+            });
+            (makeItFavourite == 'true') && await UserFavouriteMiracleBoard.create({ userId: clerkUser._id, boardId: _id })
             return sendResponse(res, true, 'Success', true);
         } catch (error) {
             return sendResponse(res, false, error.message, error);
