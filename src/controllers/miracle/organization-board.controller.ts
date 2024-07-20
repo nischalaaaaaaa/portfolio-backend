@@ -12,11 +12,13 @@ export class MiracleOrganizationBoardController {
     @Get('boards')
     async getOrganizationBoards(req, res) {
         try {
-            const { organizationId, userId: userIdClerk } = req.query;
+            const { organizationId, userId: userIdClerk, favouritesOnly, searchValue } = req.query;
+            const favourite = favouritesOnly == 'true'
             const { _id } = await ClerkUser.findOne({ clerkUserId: userIdClerk });
             const boards = await MiracleBoard.aggregate([{
                 $match: {
                     organizationIdClerk: organizationId,
+                    ...( searchValue?.length ? { title: { $regex: searchValue, $options: 'i' } } : {})
                 }
             }, {
                 $sort: {
@@ -48,6 +50,12 @@ export class MiracleOrganizationBoardController {
                             else: false
                         }
                     }
+                }
+            }, {
+                $match: {
+                    ...(favourite ? {
+                        favourite: true
+                    } : {})
                 }
             }, {
                 $project: {
