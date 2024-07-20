@@ -10,7 +10,6 @@ export interface IMiracleBoard extends Document {
     authorId: Types.ObjectId;
     authorName: string;
     imageUrl?: string;
-    favourite: boolean;
 };
 
 const miracleBoardSchema: Schema<IMiracleBoard> = new Schema<IMiracleBoard>({
@@ -21,7 +20,6 @@ const miracleBoardSchema: Schema<IMiracleBoard> = new Schema<IMiracleBoard>({
     organizationId: { type: Schema.Types.ObjectId, required:true, ref: ClerkOrganization },
     authorName: { type: Schema.Types.String, trim: true, required: true },
     imageUrl: { type: Schema.Types.String },
-    favourite: { type: Schema.Types.Boolean, default: false }
 }, {
     timestamps: true
 });

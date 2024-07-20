@@ -4,6 +4,7 @@ import { MiracleBoard } from '../../models/miracle/board.model';
 import { ClerkUser } from '../../models/miracle/clerk-user.model';
 import { ClerkOrganization } from '../../models/miracle/clerk-organization.model';
 import { Types } from 'mongoose';
+import { UserFavouriteMiracleBoard } from '../../models/miracle/user-favourite-board.model';
 
 @Controller('api/clerk/miracle-organization')
 export class MiracleOrganizationBoardController {
@@ -11,10 +12,48 @@ export class MiracleOrganizationBoardController {
     @Get('boards')
     async getOrganizationBoards(req, res) {
         try {
-            const { organizationId } = req.query;
-            const boards = await MiracleBoard.find({
-                organizationIdClerk: organizationId,
-            }).sort({ createdAt: -1 }).lean();
+            const { organizationId, userId: userIdClerk } = req.query;
+            const { _id } = await ClerkUser.findOne({ clerkUserId: userIdClerk });
+            const boards = await MiracleBoard.aggregate([{
+                $match: {
+                    organizationIdClerk: organizationId,
+                }
+            }, {
+                $sort: {
+                    createdAt: -1
+                }
+            }, {
+                $lookup: {
+                    from: 'userfavouritemiracleboards',
+                    localField: '_id',
+                    foreignField: 'boardId',
+                    pipeline: [{
+                        $match: {
+                            $expr: { $eq: ['$userId', _id] },
+                        }
+                    }],
+                    as: 'currentUserFavourite'
+                }
+            }, {
+                $unwind: {
+                    path: '$currentUserFavourite',
+                    preserveNullAndEmptyArrays: true
+                }
+            }, {
+                $addFields: {
+                    favourite: {
+                        $cond: {
+                            if: '$currentUserFavourite',
+                            then: true,
+                            else: false
+                        }
+                    }
+                }
+            }, {
+                $project: {
+                    currentUserFavourite: 0
+                }
+            }]);
             return sendResponse(res, true, 'Success', boards);
         } catch (error) {
             return sendResponse(res, false, error.message, error);
@@ -54,6 +93,24 @@ export class MiracleOrganizationBoardController {
                 authorName: `${firstName} ${lastName}`,
                 imageUrl,
             })
+            return sendResponse(res, true, 'Success', true);
+        } catch (error) {
+            return sendResponse(res, false, error.message, error);
+        }
+    }
+
+    @Post('toggle-favourite')
+    async favouriteBoard(req, res) {
+        try {
+            const { boardId: _id, userId: clerkUserId } = req.query;
+            const { _id: userId } = await ClerkUser.findOne({ clerkUserId })
+            const boardId = new Types.ObjectId(_id);
+            const favourite = await UserFavouriteMiracleBoard.findOne({ boardId, userId });
+            if(!favourite) {
+                await UserFavouriteMiracleBoard.create({ boardId, userId });
+            } else {
+                await UserFavouriteMiracleBoard.deleteOne({ boardId, userId });
+            }
             return sendResponse(res, true, 'Success', true);
         } catch (error) {
             return sendResponse(res, false, error.message, error);
