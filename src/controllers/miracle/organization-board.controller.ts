@@ -12,9 +12,10 @@ export class MiracleOrganizationBoardController {
     @Get('boards')
     async getOrganizationBoards(req, res) {
         try {
-            const { organizationId, userId: userIdClerk, favouritesOnly, searchValue } = req.query;
+            const { organizationId, favouritesOnly, searchValue } = req.query;
+            const { userId } = req;
             const favourite = favouritesOnly == 'true'
-            const { _id } = await ClerkUser.findOne({ clerkUserId: userIdClerk });
+            const { _id } = await ClerkUser.findOne({ clerkUserId: userId });
             const boards = await MiracleBoard.aggregate([{
                 $match: {
                     organizationIdClerk: organizationId,
@@ -111,7 +112,8 @@ export class MiracleOrganizationBoardController {
     @Post('toggle-favourite')
     async favouriteBoard(req, res) {
         try {
-            const { boardId: _id, userId: clerkUserId } = req.query;
+            const { boardId: _id } = req.query;
+            const { userId: clerkUserId } = req;
             const { _id: userId } = await ClerkUser.findOne({ clerkUserId })
             const boardId = new Types.ObjectId(_id);
             const favourite = await UserFavouriteMiracleBoard.findOne({ boardId, userId });
@@ -141,7 +143,9 @@ export class MiracleOrganizationBoardController {
     async deleteBoard(req, res) {
         try {
             const { boardId } = req.query;
-            await MiracleBoard.findOneAndDelete({ _id: new Types.ObjectId(boardId) })
+            const _id = new Types.ObjectId(boardId);
+            await MiracleBoard.findOneAndDelete({ _id })
+            await UserFavouriteMiracleBoard.deleteMany({ boardId: _id })
             return sendResponse(res, true, 'Success', true);
         } catch (error) {
             return sendResponse(res, false, error.message, error);
