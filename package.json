@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.0.5",
+    "@liveblocks/node": "^2.4.0",
     "@overnightjs/core": "^1.7.6",
     "@types/socket.io": "^2.1.4",
     "body-parser": "^1.20.2",
