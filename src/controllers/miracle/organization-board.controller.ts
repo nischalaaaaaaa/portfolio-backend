@@ -8,6 +8,19 @@ import { UserFavouriteMiracleBoard } from '../../models/miracle/user-favourite-b
 
 @Controller('api/clerk/miracle-organization')
 export class MiracleOrganizationBoardController {
+    @Get('board')
+    async getBoard(req, res) {
+        try {
+            const { _id } = req.query;
+            if(!_id) {
+                throw new Error('Invalid Data')
+            }
+            const board = await MiracleBoard.findById(new Types.ObjectId(_id)).lean()
+            return sendResponse(res, true, 'Success', board);
+        } catch (error) {
+            return sendResponse(res, false, error.message, error);
+        }
+    }
 
     @Get('boards')
     async getOrganizationBoards(req, res) {
