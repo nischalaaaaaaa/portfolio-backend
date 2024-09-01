@@ -12,6 +12,10 @@ export class Db {
                 '/' + config.dbname + '?authSource=' + config.dbsource
         }
 
+        if(process.env.NODE_ENV == 'prod') {
+            dbUrl = process.env.dbUrl
+        }
+
         return new Promise(async resolve => {
             try {
                 mongoose.set('strictQuery', true);

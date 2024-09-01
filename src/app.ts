@@ -10,12 +10,14 @@ import constants from './config/constants';
 import * as publicControllers from './controllers'
 import { CODES } from './config/enums';
 import socket from '../socket';
-import 'dotenv/config'; 
 import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
 import bodyParser from 'body-parser';
 
 const morgan = require('morgan')
 const { expressjwt: jwt } = require("express-jwt");
+
+export const envName = `.env.${process.env.NODE_ENV || ''}`
+require("dotenv").config({ path: envName }); 
 
 class App extends Server {
 
@@ -71,12 +73,7 @@ class App extends Server {
         });
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(express.static(constants.PUBLIC_ASSETS_PATH));
-
-        if (process.env.NODE_ENV && process.env.NODE_ENV !== 'local') {
-            this.app.use(morgan('combined', { logger }));
-        } else {
-            this.app.use(morgan('dev', { logger }));
-        }
+        this.app.use(morgan('dev', { logger }));
 
         /**
          * Clerk paths are different
