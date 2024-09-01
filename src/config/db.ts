@@ -16,6 +16,8 @@ export class Db {
             dbUrl = process.env.dbUrl
         }
 
+        console.log(process.env.NODE_ENV)
+
         return new Promise(async resolve => {
             try {
                 mongoose.set('strictQuery', true);
