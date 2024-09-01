@@ -5,7 +5,7 @@ module.exports = {
         instances: 0,
         exec_mode: "cluster",
         node_args: "--max-old-space-size=5120 -r dotenv/config",
-        env_prod: {
+        env_production: {
             NODE_ENV: "prod",
         },
     }]
