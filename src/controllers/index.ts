@@ -1,6 +1,1 @@
 export * from './portfolio/portfolio.controller'
-export * from './traditional/auth/auth.controller'
-export * from './projects/graph/graph.controller'
-export * from './clerk/clerk.webhook.controller'
-export * from './miracle/organization-board.controller'
-export * from './miracle/liveblocks.controller'

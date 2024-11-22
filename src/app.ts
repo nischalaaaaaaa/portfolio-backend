@@ -4,7 +4,7 @@ import logger from './config/logger';
 import { Db } from './config/db';
 import jwt_decode from 'jwt-decode';
 import { Types } from 'mongoose';
-import { User } from './models/traditional/user.model';
+import { User } from './models/user.model';
 import sendResponse from './middlewares/send-response';
 import constants from './config/constants';
 import * as publicControllers from './controllers'
@@ -78,6 +78,7 @@ class App extends Server {
         /**
          * Clerk paths are different
          */
+        
         this.app.use(ClerkExpressWithAuth())
         this.app.use(jwt({ 
             secret: constants.jwtSecret,
